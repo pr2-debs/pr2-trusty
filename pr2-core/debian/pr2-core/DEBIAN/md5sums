@@ -1,0 +1,7 @@
+ad2b6145dc450d11e5ce30d929580057  usr/bin/robot
+8aa931765374549943c58e704c3c82f9  usr/lib/robot/robot
+fb33895e44f58dba3dcf4d7efda37d7c  usr/lib/robot/robot.py
+c22b69996a11532eee01d62cdc0793d5  usr/lib/robot/roslaunch_ros
+d20b7a5ee7a4cb50a4dc01e48702394a  usr/share/doc/pr2-core/changelog.Debian.gz
+a261eb5efe31908b74ec9ab39d84d278  var/lib/robot/README
+db2594b39a4c849d341d253401832295  var/ros/README
