@@ -82,3 +82,6 @@
 	path = pr2-webui
 	url = https://github.com/pr2-debs/pr2-webui
 	branch = ubuntu-trusty
+[submodule "pr2-core-indigo"]
+	path = pr2-core-indigo
+	url = https://github.com/pr2-debs/pr2-core-indigo
