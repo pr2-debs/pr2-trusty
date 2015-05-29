@@ -1,0 +1,84 @@
+[submodule "pr2-applications"]
+	path = pr2-applications
+	url = https://github.com/pr2-debs/pr2-applications
+	branch = ubuntu-trusty
+[submodule "pr2-bios-bmc-images"]
+	path = pr2-bios-bmc-images
+	url = https://github.com/pr2-debs/pr2-bios-bmc-images
+	branch = ubuntu-trusty
+[submodule "pr2-chrony"]
+	path = pr2-chrony
+	url = https://github.com/pr2-debs/pr2-chrony
+	branch = ubuntu-trusty
+[submodule "pr2-ckill"]
+	path = pr2-ckill
+	url = https://github.com/pr2-debs/pr2-ckill
+	branch = ubuntu-trusty
+[submodule "pr2-core"]
+	path = pr2-core
+	url = https://github.com/pr2-debs/pr2-core
+	branch = ubuntu-trusty
+[submodule "pr2-environment"]
+	path = pr2-environment
+	url = https://github.com/pr2-debs/pr2-environment
+	branch = ubuntu-trusty
+[submodule "pr2-ft"]
+	path = pr2-ft
+	url = https://github.com/pr2-debs/pr2-ft
+	branch = ubuntu-trusty
+[submodule "pr2-grant"]
+	path = pr2-grant
+	url = https://github.com/pr2-debs/pr2-grant
+	branch = ubuntu-trusty
+[submodule "pr2-iptables.d"]
+	path = pr2-iptables.d
+	url = https://github.com/pr2-debs/pr2-iptables.d
+	branch = ubuntu-trusty
+[submodule "pr2-kernel-meta"]
+	path = pr2-kernel-meta
+	url = https://github.com/pr2-debs/pr2-kernel-meta
+	branch = ubuntu-trusty
+[submodule "pr2-netboot"]
+	path = pr2-netboot
+	url = https://github.com/pr2-debs/pr2-netboot
+	branch = ubuntu-trusty
+[submodule "pr2-netconsole"]
+	path = pr2-netconsole
+	url = https://github.com/pr2-debs/pr2-netconsole
+	branch = ubuntu-trusty
+[submodule "pr2-network"]
+	path = pr2-network
+	url = https://github.com/pr2-debs/pr2-network
+	branch = ubuntu-trusty
+[submodule "pr2-repo-pr2"]
+	path = pr2-repo-pr2
+	url = https://github.com/pr2-debs/pr2-repo-pr2
+	branch = ubuntu-trusty
+[submodule "pr2-sendhwlog"]
+	path = pr2-sendhwlog
+	url = https://github.com/pr2-debs/pr2-sendhwlog
+	branch = ubuntu-trusty
+[submodule "pr2-stress"]
+	path = pr2-stress
+	url = https://github.com/pr2-debs/pr2-stress
+	branch = ubuntu-trusty
+[submodule "pr2-sysros"]
+	path = pr2-sysros
+	url = https://github.com/pr2-debs/pr2-sysros
+	branch = ubuntu-trusty
+[submodule "pr2-systemcheck"]
+	path = pr2-systemcheck
+	url = https://github.com/pr2-debs/pr2-systemcheck
+	branch = ubuntu-trusty
+[submodule "pr2-udev"]
+	path = pr2-udev
+	url = https://github.com/pr2-debs/pr2-udev
+	branch = ubuntu-trusty
+[submodule "pr2-users"]
+	path = pr2-users
+	url = https://github.com/pr2-debs/pr2-users
+	branch = ubuntu-trusty
+[submodule "pr2-webui"]
+	path = pr2-webui
+	url = https://github.com/pr2-debs/pr2-webui
+	branch = ubuntu-trusty

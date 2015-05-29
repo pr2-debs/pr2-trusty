@@ -1,9 +1,0 @@
-Package: pr2-core
-Version: 0.5.45-precise
-Architecture: amd64
-Maintainer: Austin Hendrix <ahendrix@willowgarage.com>
-Installed-Size: 98
-Depends: python, pr2-users, pr2-core-impl, fortunes, fortune-mod
-Section: pr2/config
-Priority: extra
-Description: Provides pr2 and pr2_admin utilities for the pr2
