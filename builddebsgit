@@ -8,7 +8,7 @@ import tempfile
 from distutils.version import StrictVersion
 from optparse import OptionParser
 
-def build_pkgs(pkgs, new_only):
+def build_pkgs(pkgs, new_only, manual, auto):
     if len(pkgs) == 0:
 	pkgs = os.listdir('.')
     pkgs = [p for p in pkgs if os.path.isdir(p) and p[0] != '.']
@@ -27,22 +27,49 @@ def build_pkgs(pkgs, new_only):
         os.chdir(p)
 
         current_tag = subprocess.check_output("git describe", shell=True)
-        print "Releasing version %s" % current_tag
-
         tag_list = subprocess.check_output("git tag", shell=True)
         tag_array = tag_list.rstrip().split('\n')
         recent_release = ""
 
-        for t in tag_array:
-            if StrictVersion(t) > StrictVersion(current_tag):
-                recent_release = t
-                print "Most recent release is %s" % recent_release
-                
+        if manual:
+            inp = raw_input("You specified to use the manual changelog generation. From what tag should be used for generating the changelog? [E.g 0.0.19]")
+            if inp.lower() > StrictVersion("0.0.0"):
+                current_tag = inp
+                print "Current version is %s" % current_tag
+            else:
+                print "Specify a version # above 0.0.0"
+
+            inp2 = raw_input("What tag is the current release of %s?" % p)
+            if (inp.lower() > StrictVersion(current_tag):
+                recent_release = inp2
+                print "Next release will be %s" % recent_release
+            else:
+                print "Specify a version # greater than %s " %current_tag
+        else if auto:
+            print "Auto release versioning and changelogging activated"
+            #Get the most recent version from the Git tag list
+            a = 0
+            for t in tag_array:
+                if StrictVersion(t) > StrictVersion(current_tag):
+                    recent_release = t        
+                a++
+
+            if tag_array.len() > 1:
+                current_tag = tag_array[a-1]
+
+
         # Get the current commit_id so we know where to generate commits for the changelog from 
         command1 = "git rev-list %s" %current_tag
         command2 = "head -n 1"
         pipe = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
         commit_id = subprocess.check_output(command2, shell=True, stdin=pipe.stdout)
+          
+        corr = raw_input("You will be including commits from version %s to %s. Is this correct? [Y\n]" %(current_tag, recent_release))
+        if corr.lower()=="n":
+            print "Aborting!"
+            sys.exit(0)
+
+        print "Releasing version %s and including changes from %s to %s" %(current_tag, recent_release)
 
         # Generate changelog from git-dch
         print "Generating changelogs from Git commit %s and later" %commit_id
@@ -56,7 +83,13 @@ def build_pkgs(pkgs, new_only):
 
 if __name__ == "__main__":
   parser = OptionParser(usage="usage: builddeps [PKG1 PKG2 ...]")
+ 
   parser.add_option("--new",action="store_true", dest="new_only",default=False)
+
+  parser.add_option("--auto", "-a", help="Auto configure the release tags. with -a or --auto set, this script will create a changelog from the current git tag to the most recent git version tag. Please see --manual-tag to set the release specifics during the build", dest="auto", default=True, action="store_true")
+
+  parser.add_option("--manual-tag", help="Passing in this parameter will allow you to specify from what tag to what tag's commits are included in the changelog. Use --auto if you want the most recent changes", dest="manual", default=False, action="store_true")
+
   (options, args) = parser.parse_args()
 
-  build_pkgs(args, options.new_only)
+  build_pkgs(args, options.new_only, options.manual, options.auto)
