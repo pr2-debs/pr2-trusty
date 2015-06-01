@@ -1,0 +1,22 @@
+Format: 1.8
+Date: Mon, 01 Jun 2015 15:26:49 -0400
+Source: pr2-network
+Binary: pr2-network
+Architecture: amd64
+Version: 0.5.74
+Distribution: UNRELEASED
+Urgency: medium
+Maintainer: Austin Hendrix <ahendrix@willowgarage.com>
+Changed-By: root <root@dash-ThinkPad-T530>
+Description: 
+ pr2-network - Configures the master computer's networking for operation at Will
+Changes: 
+ pr2-network (0.5.74) UNRELEASED; urgency=medium
+ .
+   * UNRELEASED
+Checksums-Sha1: 
+ 7b03bc83ee01997764ae863c3c81668826aa4ab3 12382 pr2-network_0.5.74_amd64.deb
+Checksums-Sha256: 
+ b43a6499349b0ea794451b5d39df6eaeae1fb821b1fd80813268dd6b5c240567 12382 pr2-network_0.5.74_amd64.deb
+Files: 
+ e9b222656224903c669d129c992b4a6c 12382 config extra pr2-network_0.5.74_amd64.deb
