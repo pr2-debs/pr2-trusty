@@ -1,0 +1,62 @@
+#!/usr/bin/python
+
+import sys
+import os
+import re
+import subprocess
+import tempfile
+from distutils.version import StrictVersion
+from optparse import OptionParser
+
+def build_pkgs(pkgs, new_only):
+    if len(pkgs) == 0:
+	pkgs = os.listdir('.')
+    pkgs = [p for p in pkgs if os.path.isdir(p) and p[0] != '.']
+
+    yesno = raw_input("About to invoke 'git pull.'  Continue? [Y/n]")
+    if yesno.lower()=="n":
+        print "Aborting..."
+        sys.exit(0)
+    else:
+        subprocess.check_output("git pull",stderr=subprocess.STDOUT, shell=True)
+
+    for p in pkgs:
+        p = p.strip('/')
+        print "Preparing to build package: %s"%p
+
+        os.chdir(p)
+
+        current_tag = subprocess.check_output("git describe", shell=True)
+        print "Releasing version %s" % current_tag
+
+        tag_list = subprocess.check_output("git tag", shell=True)
+        tag_array = tag_list.rstrip().split('\n')
+        recent_release = ""
+
+        for t in tag_array:
+            if StrictVersion(t) > StrictVersion(current_tag):
+                recent_release = t
+                print "Most recent release is %s" % recent_release
+                
+        # Get the current commit_id so we know where to generate commits for the changelog from 
+        command1 = "git rev-list %s" %current_tag
+        command2 = "head -n 1"
+        pipe = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
+        commit_id = subprocess.check_output(command2, shell=True, stdin=pipe.stdout)
+
+        # Generate changelog from git-dch
+        print "Generating changelogs from Git commit %s and later" %commit_id
+        command = "git-dch --debian-branch=ubuntu-trusty --full -new-version %s --since=%s" %(recent_release, commit_id)
+        out = subprocess.check_output(command, shell=True)
+        print "Generated git changelogs... Building packages"
+
+	subprocess.Popen(['dpkg-buildpackage', '-uc', '-b']).wait()
+	subprocess.Popen(['fakeroot', 'debian/rules', 'clean']).wait()
+        os.chdir('..')
+
+if __name__ == "__main__":
+  parser = OptionParser(usage="usage: builddeps [PKG1 PKG2 ...]")
+  parser.add_option("--new",action="store_true", dest="new_only",default=False)
+  (options, args) = parser.parse_args()
+
+  build_pkgs(args, options.new_only)
