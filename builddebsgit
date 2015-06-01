@@ -35,7 +35,7 @@ def build_pkgs(pkgs, new_only, manual, auto):
         try:
             current_tag = subprocess.check_output('git describe', shell=True)
         except CalledProcessError as e:
-            yn = raw_input("No version tag found. Do you want to initialize a Git release from the current deb package's version? If no, this process will stop. Y\n")
+            yn = raw_input("No version tag found. Do you want to initialize a Git release from the current deb package's version? If no, this process will stop. [Y/n]?")
             if yn.lower() == "n":
                 print "Aborting"
                 sys.exit(0)
@@ -45,7 +45,7 @@ def build_pkgs(pkgs, new_only, manual, auto):
             if not (StrictVersion(nextversion) > StrictVersion(debversion)):
                 print "Aborting, invalid version #, not greater than existing version"
 
-            addtag = subprocess.check_output("git tag -a %s -m Incrementing version to %s", %(nextversion, nextversion), shell=True)
+            addtag = subprocess.check_output("git tag -a %s -m Incrementing version to %s" %(nextversion, nextversion), shell=True)
             pushtag = subprocess.check_output("git push --tags", shell=True)
             recent_release = nextversion
             current_tag = recent_release
@@ -74,12 +74,14 @@ def build_pkgs(pkgs, new_only, manual, auto):
             #Get the most recent version from the Git tag list
             a = 0
             for t in tag_array:
-                if StrictVersion(t) > StrictVersion(current_tag):
+                if StrictVersion(t) >= StrictVersion(current_tag):
                     recent_release = t        
                 a += 1
 
-            if tag_array.len() > 1:
+            if len(tag_array) >= 1:
                 current_tag = tag_array[a-1]
+            else:
+                recent_release = current_tag
 
 
         # Get the current commit_id so we know where to generate commits for the changelog from 
@@ -88,16 +90,16 @@ def build_pkgs(pkgs, new_only, manual, auto):
         pipe = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
         commit_id = subprocess.check_output(command2, shell=True, stdin=pipe.stdout)
           
-        corr = raw_input("You will be including commits from version %s to %s. Is this correct? [Y\n]" %(current_tag, recent_release))
+        corr = raw_input("You will be including commits from version %s to %s. Is this correct? [Y/n]" %(current_tag, recent_release))
         if corr.lower()=="n":
             print "Aborting!"
             sys.exit(0)
 
-        print "Releasing version %s and including changes from %s to %s" %(current_tag, recent_release)
+        print "Releasing version %s and including changes from %s to %s" %(recent_release, current_tag, recent_release)
 
         # Generate changelog from git-dch
         print "Generating changelogs from Git commit %s and later" %commit_id
-        command = "git-dch --debian-branch=ubuntu-trusty --full -new-version %s --since=%s" %(recent_release, commit_id)
+        command = "git-dch --debian-branch=ubuntu-trusty --full --new-version %s --since=%s" %(recent_release, commit_id)
         out = subprocess.check_output(command, shell=True)
         print "Generated git changelogs... Building packages"
 
