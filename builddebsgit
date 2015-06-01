@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import tempfile
+from subprocess import CalledProcessError
 from distutils.version import StrictVersion
 from optparse import OptionParser
 
@@ -17,6 +18,7 @@ def build_pkgs(pkgs, new_only, manual, auto):
         print "WARNING: Please specify if you want --auto or --manual-tag"
         sys.exit(0)
 
+    current_tag = ""
     yesno = raw_input("About to invoke 'git pull.'  Continue? [Y/n]")
     if yesno.lower()=="n":
         print "Aborting..."
@@ -30,7 +32,25 @@ def build_pkgs(pkgs, new_only, manual, auto):
 
         os.chdir(p)
 
-        current_tag = subprocess.check_output('git describe', shell=True)
+        try:
+            current_tag = subprocess.check_output('git describe', shell=True)
+        except CalledProcessError as e:
+            yn = raw_input("No version tag found. Do you want to initialize a Git release from the current deb package's version? If no, this process will stop. Y\n")
+            if yn.lower() == "n":
+                print "Aborting"
+                sys.exit(0)
+
+            debversion = subprocess.check_output("dpkg-parsechangelog --show-field Version")
+            nextversion = raw_input("Enter the next version # [E.g 0.2.0]")
+            if not (StrictVersion(nextversion) > StrictVersion(debversion)):
+                print "Aborting, invalid version #, not greater than existing version"
+
+            addtag = subprocess.check_output("git tag -a %s -m Incrementing version to %s", %(nextversion, nextversion), shell=True)
+            pushtag = subprocess.check_output("git push --tags", shell=True)
+            recent_release = nextversion
+            current_tag = recent_release
+                        
+
         tag_list = subprocess.check_output("git tag", shell=True)
         tag_array = tag_list.rstrip().split('\n')
         recent_release = ""

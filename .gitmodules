@@ -81,3 +81,6 @@
 [submodule "pr2-core-indigo"]
 	path = pr2-core-indigo
 	url = https://github.com/pr2-debs/pr2-core-indigo
+[submodule "pr2-applications"]
+	path = pr2-applications
+	url = https://github.com/pr2-debs/pr2-applications
