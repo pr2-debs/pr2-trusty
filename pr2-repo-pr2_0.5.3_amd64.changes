@@ -1,0 +1,30 @@
+Format: 1.8
+Date: Tue, 02 Jun 2015 11:36:14 -0400
+Source: pr2-repo-pr2
+Binary: pr2-repo-pr2
+Architecture: amd64
+Version: 0.5.3
+Distribution: UNRELEASED
+Urgency: medium
+Maintainer: Jeremy Leibs <leibs@willowgarage.com>
+Changed-By: root <root@dash-ThinkPad-T530>
+Description: 
+ pr2-repo-pr2 - Package containing the sources.list and key for the pr2debs repos
+Changes: 
+ pr2-repo-pr2 (0.5.3) UNRELEASED; urgency=medium
+ .
+   * UNRELEASED
+   * UNRELEASED
+   * UNRELEASED
+   * UNRELEASED
+   * UNRELEASED
+   * UNRELEASED
+   * UNRELEASED
+   * UNRELEASED
+   * UNRELEASED
+Checksums-Sha1: 
+ 6bc59c42874c6f33bba88f26df3bf200535086ce 1406 pr2-repo-pr2_0.5.3_amd64.deb
+Checksums-Sha256: 
+ ca0e26f80552e7a9a1c371ac185566abeda8efca9663078351ea51c76ce8fe2d 1406 pr2-repo-pr2_0.5.3_amd64.deb
+Files: 
+ 6bd83c045e9f6c6668a3c7e11c7f4e77 1406 config extra pr2-repo-pr2_0.5.3_amd64.deb

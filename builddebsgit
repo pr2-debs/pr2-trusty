@@ -51,7 +51,6 @@ def build_pkgs(pkgs, new_only, manual, auto):
             recent_release = nextversion
             current_tag = recent_release
                         
-
         tag_list = subprocess.check_output("git tag", shell=True)
         tag_array = tag_list.rstrip().split('\n')
         recent_release = ""
@@ -75,7 +74,7 @@ def build_pkgs(pkgs, new_only, manual, auto):
             #Get the most recent version from the Git tag list
             a = 0
             for t in tag_array:
-                if StrictVersion(t) >= StrictVersion(current_tag):
+                if LooseVersion(t) >= LooseVersion(current_tag):
                     recent_release = t        
                 a += 1
 
@@ -97,10 +96,14 @@ def build_pkgs(pkgs, new_only, manual, auto):
             sys.exit(0)
 
         print "Releasing version %s and including changes from %s to %s\n" %(recent_release, current_tag, recent_release)
+        new_v = ""
+        if recent_release == current_tag:
+            new_v = "--new-version"
+     
 
         # Generate changelog from git-dch
         print "Generating changelogs from Git commit %s and later\n" %commit_id
-        command = "git-dch --debian-branch=ubuntu-trusty --full --new-version %s --since=%s" %(recent_release, commit_id)
+        command = "git-dch --debian-branch=ubuntu-trusty --full %s %s --since=%s" %(recent_release, commit_id, new_v)
         out = subprocess.check_output(command, shell=True)
         print "Generated git changelogs... Building packages"
 
