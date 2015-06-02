@@ -5,14 +5,23 @@ import os
 import re
 import subprocess
 import tempfile
+
+from termcolor import colored
 from subprocess import CalledProcessError
 from optparse import OptionParser
 from packaging.version import Version, LegacyVersion
 
+
 def build_pkgs(pkgs, new_only, manual, auto):
     if len(pkgs) == 0:
-	pkgs = os.listdir('.')
+        pkgs = os.listdir('.')
     pkgs = [p for p in pkgs if os.path.isdir(p) and p[0] != '.']
+
+    files = os.listdir('.')
+    print colored("Reading existing .deb files", 'blue')
+    made_debs = [deb for deb in files if os.path.isfile(deb) and deb.endswith('.deb')]
+    for deb in made_debs:
+        print colored("%s is already made. Skipping." %deb, 'green')
 
     if not manual and not auto:
         print "WARNING: Please specify if you want --auto or --manual-tag"
@@ -28,88 +37,99 @@ def build_pkgs(pkgs, new_only, manual, auto):
 
     for p in pkgs:
         p = p.strip('/')
-        print "Preparing to build package: %s\n"%p
+        print colored("\nPreparing to build package: %s"%p, 'blue')
 
-        os.chdir(p)
+        alreadymade = False
+        for madedeb in made_debs:
+            if madedeb.split('_')[0] == p.lower():
+                print colored("%s is already made. Skipping." %p, 'green')   
+                alreadymade = True
 
-        try:
-            current_tag = subprocess.check_output('git describe', shell=True)
-        except CalledProcessError as e:
-            yn = raw_input("No version tag found. Do you want to initialize a Git release from the current deb package's version? If no, this process will stop. [Y/n]?\n")
-            if yn.lower() == "n":
-                print "Aborting"
+        if not alreadymade:
+            os.chdir(p)
+            # Do package building
+            try:
+            # Go to nxt pkg
+                current_tag = subprocess.check_output('git describe', shell=True)
+            except CalledProcessError as e:
+                yn = raw_input("No version tag found. Do you want to initialize a Git release from the current deb package's version? If no, this process will stop. [Y/n]?\n")
+                if yn.lower() == "n":
+                    print "Aborting"
+                    sys.exit(0)
+          
+                debversion = subprocess.check_output("dpkg-parsechangelog --show-field Version", shell=True)
+                nextversion = raw_input("Enter the next version # [E.g 0.2.0] (Current is %s)" %debversion)
+                if not (LegacyVersion(nextversion) > LegacyVersion(debversion)):
+                    print "Aborting, invalid version #, not greater than existing version"
+
+                addtag = subprocess.check_output("git tag -a %s -m 'Incrementing version to %s\n'" %(nextversion, nextversion), shell=True)
+                pushtag = subprocess.check_output("git push --tags", shell=True)
+                recent_release = nextversion
+                #current_tag = recent_release
+                               
+            tag_list = subprocess.check_output("git tag", shell=True)
+            tag_array = tag_list.rstrip().split('\n')
+            recent_release = "[ERROR: recent release not determined]"
+
+            if manual:
+                inp = raw_input("You specified to use the manual changelog generation. From what tag should be used for generating the changelog? [E.g 0.0.19]\n")
+                if inp.lower() > LegacyVersion("0.0.0"):
+                    current_tag = inp
+                    print "Current version is %\ns" % current_tag
+                else:
+                    print "Specify a version # above 0.0.0\n"
+
+                inp2 = raw_input("What tag is the current release of %s?\n" % p)
+                if inp.lower() > LegacyVersion(current_tag):
+                    recent_release = inp2
+                    print "Next release will be %s" % recent_release
+                else:
+                    print "Specify a version # greater than %s " %current_tag
+            elif auto:
+                print colored("Auto release versioning and changelogging activated. Press M if you would like to manually set the releases for this package. \n", 'yellow')
+                #Get the most recent version from the Git tag list
+                a = 0
+                for t in tag_array:
+                   if LegacyVersion(t) >= LegacyVersion(current_tag):
+                       recent_release = t
+                   a += 1
+          
+                if len(tag_array) >= 1:
+                    current_tag = tag_array[a-1]
+                else:
+                    recent_release = current_tag
+
+
+                # Get the current commit_id so we know where to generate commits for the changelog from 
+            command1 = "git rev-list %s" %current_tag
+            command2 = "head -n 1"
+            pipe = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
+            commit_id = subprocess.check_output(command2, shell=True, stdin=pipe.stdout)
+                  
+            corr = raw_input("You will be including commits from version %s to %s. Is this correct? [Y/n/M]?\n" %(current_tag, recent_release))
+            if corr.lower()=="n":
+                print colored("Aborting!", 'red')
+                sys.exit(0)
+            elif corr.lower()=="m":
+                print colored("Manual override hasn't been implemented yet!", 'red')
                 sys.exit(0)
 
-            debversion = subprocess.check_output("dpkg-parsechangelog --show-field Version", shell=True)
-            nextversion = raw_input("Enter the next version # [E.g 0.2.0] (Current is %s)" %debversion)
-            if not (LegacyVersion(nextversion) > LegacyVersion(debversion)):
-                print "Aborting, invalid version #, not greater than existing version"
+            print "Releasing version %s and including changes from %s to %s\n" %(recent_release, current_tag, recent_release)
+            new_v = ""
+            # Only set new version if recent_release > current_tag
+            if LegacyVersion(recent_release) > LegacyVersion(current_tag):
+                new_v = "--new-version"
+            
 
-            addtag = subprocess.check_output("git tag -a %s -m 'Incrementing version to %s\n'" %(nextversion, nextversion), shell=True)
-            pushtag = subprocess.check_output("git push --tags", shell=True)
-            recent_release = nextversion
-            #current_tag = recent_release
-                        
-        tag_list = subprocess.check_output("git tag", shell=True)
-        tag_array = tag_list.rstrip().split('\n')
-        recent_release = "[ERROR: recent release not determined]"
+            # Generate changelog from git-dch
+            print "Generating changelogs from Git commit %s and later\n" %commit_id
+            command = "git-dch --debian-branch=ubuntu-trusty --full %s %s --since=%s" %(recent_release, new_v, commit_id)
+            out = subprocess.check_output(command, shell=True)
+            print "Generated git changelogs... Building packages"
 
-        if manual:
-            inp = raw_input("You specified to use the manual changelog generation. From what tag should be used for generating the changelog? [E.g 0.0.19]\n")
-            if inp.lower() > LegacyVersion("0.0.0"):
-                current_tag = inp
-                print "Current version is %\ns" % current_tag
-            else:
-                print "Specify a version # above 0.0.0\n"
-
-            inp2 = raw_input("What tag is the current release of %s?\n" % p)
-            if inp.lower() > LegacyVersion(current_tag):
-                recent_release = inp2
-                print "Next release will be %s" % recent_release
-            else:
-                print "Specify a version # greater than %s " %current_tag
-        elif auto:
-            print "Auto release versioning and changelogging activated\n"
-            #Get the most recent version from the Git tag list
-            a = 0
-            for t in tag_array:
-                if LegacyVersion(t) >= LegacyVersion(current_tag):
-                    recent_release = t
-                a += 1
-
-            if len(tag_array) >= 1:
-                current_tag = tag_array[a-1]
-            else:
-                recent_release = current_tag
-
-
-        # Get the current commit_id so we know where to generate commits for the changelog from 
-        command1 = "git rev-list %s" %current_tag
-        command2 = "head -n 1"
-        pipe = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
-        commit_id = subprocess.check_output(command2, shell=True, stdin=pipe.stdout)
-          
-        corr = raw_input("You will be including commits from version %s to %s. Is this correct? [Y/n]?\n" %(current_tag, recent_release))
-        if corr.lower()=="n":
-            print "Aborting!"
-            sys.exit(0)
-
-        print "Releasing version %s and including changes from %s to %s\n" %(recent_release, current_tag, recent_release)
-        new_v = ""
-        # Only set new version if recent_release > current_tag
-        if LegacyVersion(recent_release) > LegacyVersion(current_tag):
-            new_v = "--new-version"
-     
-
-        # Generate changelog from git-dch
-        print "Generating changelogs from Git commit %s and later\n" %commit_id
-        command = "git-dch --debian-branch=ubuntu-trusty --full %s %s --since=%s" %(recent_release, new_v, commit_id)
-        out = subprocess.check_output(command, shell=True)
-        print "Generated git changelogs... Building packages"
-
-	subprocess.Popen(['dpkg-buildpackage', '-uc', '-b']).wait()
-	subprocess.Popen(['fakeroot', 'debian/rules', 'clean']).wait()
-        os.chdir('..')
+            subprocess.Popen(['dpkg-buildpackage', '-uc', '-b']).wait()
+            subprocess.Popen(['fakeroot', 'debian/rules', 'clean']).wait()
+            os.chdir('..')
 
 if __name__ == "__main__":
   parser = OptionParser(usage="usage: builddeps [PKG1 PKG2 ...]")
