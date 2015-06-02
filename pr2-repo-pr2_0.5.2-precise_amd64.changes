@@ -1,0 +1,26 @@
+Format: 1.8
+Date: Tue, 11 Jan 2011 15:33:27 -0800
+Source: pr2-repo-pr2
+Binary: pr2-repo-pr2
+Architecture: amd64
+Version: 0.5.2-precise
+Distribution: stable
+Urgency: low
+Maintainer: Jeremy Leibs <leibs@willowgarage.com>
+Changed-By: Jeremy Leibs <leibs@willowgarage.com>
+Description: 
+ pr2-repo-pr2 - Package containing the sources.list and key for the pr2debs repos
+Changes: 
+ pr2-repo-pr2 (0.5.2-precise) stable; urgency=low
+ .
+   [ Jeremy Leibs ]
+   * Incrementing to SVN: r581
+    - r581: Moving all debs over to packages.ros.org
+ .
+   [ root ]
+Checksums-Sha1: 
+ 108560921fc8c18efdd07bcc9b2b20be960c9565 1374 pr2-repo-pr2_0.5.2-precise_amd64.deb
+Checksums-Sha256: 
+ 4e41ba97e57915b6a055755685597baa992e94869fc4ba88134f893bb1e91c57 1374 pr2-repo-pr2_0.5.2-precise_amd64.deb
+Files: 
+ 5cebc7666b7c27d157897d2d06bf32b5 1374 config extra pr2-repo-pr2_0.5.2-precise_amd64.deb

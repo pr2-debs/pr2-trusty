@@ -1,0 +1,26 @@
+Format: 1.8
+Date: Wed, 01 Aug 2012 09:59:09 -0700
+Source: pr2-bios-bmc-images
+Binary: pr2-bios-bmc-images
+Architecture: amd64
+Version: 0.5.3-precise
+Distribution: stable
+Urgency: low
+Maintainer: Jeremy Leibs <leibs@willowgarage.com>
+Changed-By: Michael Brindle <mbrindle@willowgarage.com>
+Description: 
+ pr2-bios-bmc-images - Installs a set of freedos images which update the bios and bmc fo
+Changes: 
+ pr2-bios-bmc-images (0.5.3-precise) stable; urgency=low
+ .
+   [ Michael Brindle ]
+   * Unversioned:
+     - pr2-bios-bmc-images/mount_point
+ .
+   [ root ]
+Checksums-Sha1: 
+ cd750afc990252e795757f33e6fbe15cbf2a2e52 1033224 pr2-bios-bmc-images_0.5.3-precise_amd64.deb
+Checksums-Sha256: 
+ f9f90dc19c505c5e7f4d8f5c00a9e20e4f8b4eb45bb189dbb0c78ba1b87c5b60 1033224 pr2-bios-bmc-images_0.5.3-precise_amd64.deb
+Files: 
+ 009c98c902de47e48ddf18bb64f20dc9 1033224 unknown extra pr2-bios-bmc-images_0.5.3-precise_amd64.deb

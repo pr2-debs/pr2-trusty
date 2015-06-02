@@ -1,0 +1,26 @@
+Format: 1.8
+Date: Mon, 23 Sep 2013 17:41:44 -0700
+Source: pr2-netboot
+Binary: pr2-netboot
+Architecture: amd64
+Version: 0.5.46-precise
+Distribution: stable
+Urgency: low
+Maintainer: Blaise Gassend <blaise@willowgarage.com>
+Changed-By: Austin Hendrix <ahendrix@willowgarage.com>
+Description: 
+ pr2-netboot - Configures the master computer to nfsboot the slave, and configur
+Changes: 
+ pr2-netboot (0.5.46-precise) stable; urgency=low
+ .
+   [ Austin Hendrix ]
+   * Incrementing to SVN: r1239
+    - r1239: Force include hidden file.
+ .
+   [ root ]
+Checksums-Sha1: 
+ 4432624f4015a555f5f0585c15dbfadc63e7e32a 14974608 pr2-netboot_0.5.46-precise_amd64.deb
+Checksums-Sha256: 
+ 78ebf1ec217aad0194c9eaa4372fee772e40c022f49c0587ced3f75915e94b20 14974608 pr2-netboot_0.5.46-precise_amd64.deb
+Files: 
+ 94d70044d1a44a21e74cf95ed57f8570 14974608 config extra pr2-netboot_0.5.46-precise_amd64.deb

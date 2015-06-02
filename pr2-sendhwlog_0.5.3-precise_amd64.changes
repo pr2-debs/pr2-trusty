@@ -1,0 +1,26 @@
+Format: 1.8
+Date: Wed, 22 Dec 2010 15:09:59 -0800
+Source: pr2-sendhwlog
+Binary: pr2-sendhwlog
+Architecture: amd64
+Version: 0.5.3-precise
+Distribution: stable
+Urgency: low
+Maintainer: Jeremy Leibs <leibs@willowgarage.com>
+Changed-By: Jeremy Leibs <leibs@willowgarage.com>
+Description: 
+ pr2-sendhwlog - Provides a script for sending hwlogs to wg or the basestation
+Changes: 
+ pr2-sendhwlog (0.5.3-precise) stable; urgency=low
+ .
+   [ Jeremy Leibs ]
+   * Incrementing to SVN: r518
+    - r518: Changelog
+ .
+   [ root ]
+Checksums-Sha1: 
+ 8a5ed4567095c0d6ff208061646ac5a4fb56d7e6 6168 pr2-sendhwlog_0.5.3-precise_amd64.deb
+Checksums-Sha256: 
+ db9fd5bf869b7477d9bd5beacf8ffbd27aa1f73fd9d31fae4b285b63e3fa46b6 6168 pr2-sendhwlog_0.5.3-precise_amd64.deb
+Files: 
+ 91de1070aede5dc8245c4ba52e88b287 6168 config extra pr2-sendhwlog_0.5.3-precise_amd64.deb
