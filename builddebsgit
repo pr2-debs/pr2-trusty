@@ -97,7 +97,8 @@ def build_pkgs(pkgs, new_only, manual, auto):
 
         print "Releasing version %s and including changes from %s to %s\n" %(recent_release, current_tag, recent_release)
         new_v = ""
-        if recent_release == current_tag:
+        # Only set new version if recent_release > current_tag
+        if LooseVersion(recent_release) > LooseVersion(current_tag):
             new_v = "--new-version"
      
 
