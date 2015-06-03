@@ -100,46 +100,104 @@ def build_pkgs(pkgs, new_only, manual, auto):
                     recent_release = current_tag
 
 
-                # Get the current commit_id so we know where to generate commits for the changelog from 
-            command1 = "git rev-list %s" %current_tag
-            command2 = "head -n 1"
-            pipe = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
-            commit_id = subprocess.check_output(command2, shell=True, stdin=pipe.stdout)
-                  
-            corr = raw_input("You will be including commits from version %s to %s. Is this correct? [Y/n/M]?\n" %(current_tag, recent_release))
-            if corr.lower()=="n":
-                print colored("Aborting!", 'red')
-                sys.exit(0)
-            elif corr.lower()=="m":
-                print colored("Manual override hasn't been implemented yet!", 'red')
-                sys.exit(0)
-
-            print "Releasing version %s and including changes from %s to %s\n" %(recent_release, current_tag, recent_release)
-            new_v = ""
-            # Only set new version if recent_release > current_tag
-            if LegacyVersion(recent_release) > LegacyVersion(current_tag):
-                new_v = "--new-version"
-            
-
-            # Generate changelog from git-dch
-            print "Generating changelogs from Git commit %s and later\n" %commit_id
-            command = "git-dch --debian-branch=ubuntu-trusty --full %s %s --since=%s" %(recent_release, new_v, commit_id)
-            out = subprocess.check_output(command, shell=True)
-            print "Generated git changelogs... Building packages"
-
-            subprocess.Popen(['dpkg-buildpackage', '-uc', '-b']).wait()
-            subprocess.Popen(['fakeroot', 'debian/rules', 'clean']).wait()
+            commit_id = get_commit_id(tag)
+            confirm_detected_versions(current_tag, recent_release)
+            new_v = is_new_version(recent_release, current_tag)
+            generate_changelogs(recent_release, new_v, commit_id)
+            make_package()
             os.chdir('..')
 
+
+def get_most_recent_release():
+
+
+def get_current_tag():
+    current_tag = ""
+    try:
+    # Go to nxt pkg
+        current_tag = subprocess.check_output('git describe', shell=True)
+    except CalledProcessError as e:
+        yn = raw_input("No version tag found. Do you want to initialize a Git release from the current deb package's version? If no, this process will stop. [Y/n]?\n")
+        if yn.lower() == "n":
+            print "Aborting"
+            sys.exit(0)
+          
+            debversion = subprocess.check_output("dpkg-parsechangelog --show-field Version", shell=True)
+            print colored("Current detected version is %s" %debversion, 'yellow')
+            #nextversion = raw_input("Enter the next version # [E.g 0.2.0] (Current is %s)" %debversion)
+            if not (LegacyVersion(nextversion) > LegacyVersion(debversion)):
+                print "Aborting, invalid version #, not greater than existing version"
+
+            addtag = subprocess.check_output("git tag -a %s -m 'Creation version tag %s\n'" %debversion, shell=True)
+            pushtag = subprocess.check_output("git push --tags", shell=True)
+            print colored("Created and pushed git tags (%s)" %debversion, 'blue')
+            current_tag = debversion
+
+    return current_tag
+
+def do_manual_versioning():
+
+    return versions
+
+# Auto detect versions (it detects the current version via git describe and the tag prior to that one)
+def do_auto_versioning():
+    print colored("Auto release versioning and changelogging activated\n, 'yellow')
+    #Get the most recent version from the Git tag list
+    a = 0
+    for t in tag_array:
+        if LegacyVersion(t) >= LegacyVersion(current_tag):
+            recent_release = t
+        a += 1
+          
+    if len(tag_array) >= 1:
+        current_tag = tag_array[a-1]
+    else:
+        recent_release = current_tag
+    return versions
+
+# Get the current commit_id so we know where to generate commits for the changelog from 
+def get_commit_id(tag):
+    command1 = "git rev-list %s" %current_tag
+    command2 = "head -n 1"
+    pipe = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
+    commit_id = subprocess.check_output(command2, shell=True, stdin=pipe.stdout)
+    return commit_id
+
+# Confirm that the versions changes are made from are correct. E.g if it detects 0.5.3 and 0.5.4, do you want to includ commits from tag 0.5.3 to 0.5.4 in your debian package release?
+def confirm_detected_versions(current_tag, most_recent_tag):
+    corr = raw_input("You will be including commits from version %s to %s. Is this correct? [Y/n/M]?\n" %(current_tag, most_recent_tag))
+    if corr.lower()=="n":
+        print colored("Aborting!", 'red')
+        sys.exit(0)
+    elif corr.lower()=="m":
+        print colored("Manual override hasn't been implemented yet!", 'red')
+        sys.exit(0)
+
+# Check if tag a > tag b, If so, returns that tag A is the new version. Else it is not a new version
+def is_new_version(tag_a, tag_b):
+    new_v = ""
+    if LegacyVersion(tag_a) > LegacyVersion(tag_b):
+        new_v = "--new-version"
+    return new_v
+
+# Generates changelogs for this git deb package, given some parameters.
+def generate_changelogs(most_recent_release, new_version, commit_id):
+    print "Generating changelogs from Git commit %s and later\n" %commit_id
+    command = "git-dch --debian-branch=ubuntu-trusty --full %s %s --since=%s" %(most_recent_release, new_version, commit_id)
+    out = subprocess.check_output(command, shell=True)
+    return out
+
+# Makes debian package of current dir.
+def make_package():
+    print colored("...Building package...", 'blue')
+    subprocess.Popen(['dpkg-buildpackage', '-uc', '-b']).wait()
+    subprocess.Popen(['fakeroot', 'debian/rules', 'clean']).wait()
+
+# Main
 if __name__ == "__main__":
   parser = OptionParser(usage="usage: builddeps [PKG1 PKG2 ...]")
- 
   parser.add_option("--new",action="store_true", dest="new_only",default=False)
-
   parser.add_option("--auto", "-a", help="Auto configure the release tags. with -a or --auto set, this script will create a changelog from the current git tag to the most recent git version tag. Please see --manual-tag to set the release specifics during the build", dest="auto", default=True, action="store_true")
-
   parser.add_option("--manual-tag", help="Passing in this parameter will allow you to specify from what tag to what tag's commits are included in the changelog. Use --auto if you want the most recent changes", dest="manual", default=False, action="store_true")
-
   (options, args) = parser.parse_args()
-
   build_pkgs(args, options.new_only, options.manual, options.auto)
