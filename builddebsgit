@@ -39,7 +39,6 @@ def build_pkgs(pkgs, new_only, manual, auto):
             versions = ()
             if manual:
                 versions = do_manual_versioning()
-
             elif auto:
                 versions = do_auto_versioning()
 
@@ -65,12 +64,11 @@ def package_exists(package):
     alreadymade = False
     for madedeb in made_debs:
         if madedeb.split('_')[0] == package.lower():
-            print colored("%s is already made. Skipping." %p, 'green')   
+            print colored("%s is already made. Skipping." %package, 'green')   
             alreadymade = True
     return alreadymade
 
-def get_most_recent_release():
-    current_tag = get_current_tag()
+def get_most_recent_release(current_tag):
     tag_list = subprocess.check_output("git tag", shell=True)
     tag_array = tag_list.rstrip().split('\n')
     recent_release = ""
@@ -83,7 +81,7 @@ def get_most_recent_release():
     elif len(tag_array) == 1:
         return current_tag
     else:
-        print colored("Recent release: %s" % recent_release, 'yellow')
+        print colored("Detected recent release: %s" % recent_release, 'yellow')
         return recent_release
 
 def get_current_tag():
@@ -108,6 +106,7 @@ def get_current_tag():
             print colored("Created and pushed git tags (%s)" %debversion, 'blue')
             current_tag = debversion
 
+    print colored("Detected current release: %s" % current_tag, 'yellow') 
     return current_tag
 
 # Manually ask for current release and previous release
@@ -129,11 +128,15 @@ def do_manual_versioning():
 
 # Auto detect versions (it detects the current version via git describe and the tag prior to that one)
 def do_auto_versioning():
-    versions = (get_current_tag(), get_most_recent_release())
+    print colored("Auto versioning and configuration enabled.", 'yellow')
+    current_tag = get_current_tag()
+    most_recent = get_most_recent_release(current_tag)
+    versions = (current_tag, most_recent)
+    return versions
 
 # Get the current commit_id so we know where to generate commits for the changelog from 
 def get_commit_id(tag):
-    command1 = "git rev-list %s" %current_tag
+    command1 = "git rev-list %s" % tag
     command2 = "head -n 1"
     pipe = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
     commit_id = subprocess.check_output(command2, shell=True, stdin=pipe.stdout)
@@ -151,8 +154,10 @@ def confirm_detected_versions(current_tag, most_recent_tag):
 
 # Check if tag a > tag b, If so, returns that tag A is the new version. Else it is not a new version
 def is_new_version(tag_a, tag_b):
+    print colored("Checking %s against %s.. determining if new version" %(tag_a, tag_b), 'blue')
     new_v = ""
-    if LegacyVersion(tag_a) > LegacyVersion(tag_b):
+    if LegacyVersion(tag_a) > LegacyVersion(tag_b) and not (LegacyVersion(tag_a) < LegacyVersion(tag_b)) and tag_a == tag_b:
+        print colored("New version detected!", 'green')
         new_v = "--new-version"
     return new_v
 
@@ -160,6 +165,7 @@ def is_new_version(tag_a, tag_b):
 def generate_changelogs(most_recent_release, new_version, commit_id):
     print "Generating changelogs from Git commit %s and later\n" %commit_id
     command = "git-dch --debian-branch=ubuntu-trusty --full %s %s --since=%s" %(most_recent_release, new_version, commit_id)
+    command.rstrip('\n')
     out = subprocess.check_output(command, shell=True)
     return out
 
