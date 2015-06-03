@@ -98,16 +98,13 @@ def get_current_tag():
             print "Aborting"
             sys.exit(0)
           
-            debversion = subprocess.check_output("dpkg-parsechangelog --show-field Version", shell=True)
-            print colored("Current detected version is %s" %debversion, 'yellow')
-            #nextversion = raw_input("Enter the next version # [E.g 0.2.0] (Current is %s)" %debversion)
-            if not (LegacyVersion(nextversion) > LegacyVersion(debversion)):
-                print "Aborting, invalid version #, not greater than existing version"
+        debversion = subprocess.check_output("dpkg-parsechangelog --show-field Version", shell=True)
+        print colored("Current detected version is %s" %debversion, 'yellow')
 
-            addtag = subprocess.check_output("git tag -a %s -m 'Creation version tag %s\n'" %debversion, shell=True)
-            pushtag = subprocess.check_output("git push --tags", shell=True)
-            print colored("Created and pushed git tags (%s)" %debversion, 'blue')
-            current_tag = debversion
+        addtag = subprocess.check_output("git tag -a %s -m 'Creation version tag %s\n'" %(debversion, debversion), shell=True)
+        pushtag = subprocess.check_output("git push --tags", shell=True)
+        print colored("Created and pushed git tags (%s)" %debversion, 'blue')
+        current_tag = debversion
 
     current_tag = current_tag.rsplit('\n')[0]
     return current_tag
