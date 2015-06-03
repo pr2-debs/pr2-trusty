@@ -100,8 +100,9 @@ def get_current_tag():
           
         debversion = subprocess.check_output("dpkg-parsechangelog --show-field Version", shell=True)
         print colored("Current detected version is %s" %debversion, 'yellow')
-
-        addtag = subprocess.check_output("git tag -a %s -m 'Creation version tag %s\n'" %(debversion, debversion), shell=True)
+        debversion = debversion.rsplit('\n')[0]
+        cmd = "git tag -a %s -m 'Creation version tag %s\n'" %(debversion, debversion)
+        addtag = subprocess.check_output(cmd, shell=True)
         pushtag = subprocess.check_output("git push --tags", shell=True)
         print colored("Created and pushed git tags (%s)" %debversion, 'blue')
         current_tag = debversion

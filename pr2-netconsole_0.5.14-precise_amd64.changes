@@ -1,0 +1,26 @@
+Format: 1.8
+Date: Thu, 17 Mar 2011 11:31:19 -0700
+Source: pr2-netconsole
+Binary: pr2-netconsole
+Architecture: amd64
+Version: 0.5.14-precise
+Distribution: stable
+Urgency: low
+Maintainer: Kevin Watts <watts@willowgarage.com>
+Changed-By: Wim Meeussen <wim@willowgarage.com>
+Description: 
+ pr2-netconsole - Logs from netconsole and puts logs in /hwlog
+Changes: 
+ pr2-netconsole (0.5.14-precise) stable; urgency=low
+ .
+   [ Wim Meeussen ]
+   * Incrementing to SVN: r725
+    - r725: console-log-zip is now executable
+ .
+   [ root ]
+Checksums-Sha1: 
+ 473d65ff66330aadd7d0254418b96484b48fa94b 3030 pr2-netconsole_0.5.14-precise_amd64.deb
+Checksums-Sha256: 
+ 16419e8e0c627d1755a9c1ba64ca74494fea36d892b8e2a14d324b20ab697e21 3030 pr2-netconsole_0.5.14-precise_amd64.deb
+Files: 
+ f4660b5547f887cd302e09c0caab9fe2 3030 config extra pr2-netconsole_0.5.14-precise_amd64.deb

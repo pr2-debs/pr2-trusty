@@ -1,0 +1,26 @@
+Format: 1.8
+Date: Wed, 21 Dec 2011 18:49:40 -0800
+Source: pr2-chrony
+Binary: pr2-chrony
+Architecture: amd64
+Version: 0.5.4-precise
+Distribution: stable
+Urgency: low
+Maintainer: Blaise Gassend <blaise@willowgarage.com>
+Changed-By: Austin Hendrix <ahendrix@willowgarage.com>
+Description: 
+ pr2-chrony - Installs chrony for the pr2 with configuration files on both comp
+Changes: 
+ pr2-chrony (0.5.4-precise) stable; urgency=low
+ .
+   [ Austin Hendrix ]
+   * Incrementing to SVN: r831
+    - r831: Fix configuration files managed by ucf.
+ .
+   [ root ]
+Checksums-Sha1: 
+ ee64562ced57abfdea62712bbdaf63d9c54c31e9 5392 pr2-chrony_0.5.4-precise_amd64.deb
+Checksums-Sha256: 
+ 25536c32ed187468a2d25e3ef2dc1f2cd11a929a06d851af11acf80e409df9cf 5392 pr2-chrony_0.5.4-precise_amd64.deb
+Files: 
+ 36d8fe514ddcf5e85a41daccd141acad 5392 config extra pr2-chrony_0.5.4-precise_amd64.deb

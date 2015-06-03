@@ -1,0 +1,31 @@
+Format: 1.8
+Date: Mon, 30 Sep 2013 11:22:21 -0700
+Source: pr2-kernel-meta
+Binary: pr2-kernel pr2-kernel-headers
+Architecture: amd64
+Version: 0.0.7
+Distribution: precise
+Urgency: low
+Maintainer: Austin Hendrix <ahendrix@willowgarage.com>
+Changed-By: Austin Hendrix <ahendrix@willowgarage.com>
+Description: 
+ pr2-kernel - Metapackage for the PR2 kernel
+ pr2-kernel-headers - Metapackage for PR2 kernel headers
+Changes: 
+ pr2-kernel-meta (0.0.7) precise; urgency=low
+ .
+   [ Austin Hendrix ]
+   * Incrementing to SVN: r1263
+    - r1126: Update to debhelper v9
+    - r1263: Move pr2-kernel into main.
+ .
+   [ root ]
+Checksums-Sha1: 
+ a3d6e45dc6855bbc71bdcd096161166d22f1157e 1334 pr2-kernel_0.0.7_amd64.deb
+ 433665505dccb3d9ac6440f195989ef9853bc77c 1350 pr2-kernel-headers_0.0.7_amd64.deb
+Checksums-Sha256: 
+ 2c51f9231f7007ed13e6972660c4a1c40611b56493ef51c248d60ed00012b1c9 1334 pr2-kernel_0.0.7_amd64.deb
+ f0bf9cfdf853df0350d62d95b3f278e15dd17732ccc5161dc104d5fd400ae0f0 1350 pr2-kernel-headers_0.0.7_amd64.deb
+Files: 
+ 2ca9eb02aab6ea187a1e75d40160c964 1334 config extra pr2-kernel_0.0.7_amd64.deb
+ 8232cc6e3f0849eef48e451a8ce111b8 1350 config extra pr2-kernel-headers_0.0.7_amd64.deb

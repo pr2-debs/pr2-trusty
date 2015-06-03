@@ -1,0 +1,27 @@
+Format: 1.8
+Date: Wed, 12 Nov 2014 21:46:46 -0800
+Source: pr2-core
+Binary: pr2-core
+Architecture: amd64
+Version: 0.5.45-precise
+Distribution: stable
+Urgency: low
+Maintainer: Austin Hendrix <ahendrix@willowgarage.com>
+Changed-By: Devon Ash <dash@clearpathrobotics.com>
+Description: 
+ pr2-core   - Provides pr2 and pr2_admin utilities for the pr2
+Changes: 
+ pr2-core (0.5.45-precise) stable; urgency=low
+ .
+   [ Devon Ash ]
+   * Incrementing to SVN: r1081
+   - r1081: No longer using SVN, find the updates at https://github.com/pr2-debs/
+   - r1082: Modifications to robot.py to add robot groovy and robot hydro commands for swapping between environments
+ .
+   [ root ]
+Checksums-Sha1: 
+ 8998d86a29545d23adc3b9e58633439bc820d4b9 15196 pr2-core_0.5.45-precise_amd64.deb
+Checksums-Sha256: 
+ b4275be7df036045e07c0f04ce02e014fdacad31d6773ac8ba62204419472271 15196 pr2-core_0.5.45-precise_amd64.deb
+Files: 
+ 86d6452369fb9442fd66dcd128975cb6 15196 pr2/config extra pr2-core_0.5.45-precise_amd64.deb

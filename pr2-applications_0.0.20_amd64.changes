@@ -1,0 +1,28 @@
+Format: 1.8
+Date: Mon, 01 Jun 2015 09:54:50 -0400
+Source: pr2-applications
+Binary: pr2-applications
+Architecture: amd64
+Version: 0.0.20
+Distribution: UNRELEASED
+Urgency: medium
+Maintainer: Austin Hendrix <ahendrix@willowgarage.com>
+Changed-By: TheDash <noobaca2@gmail.com>
+Description: 
+ pr2-applications - Provides Android application framework for the PR2
+Changes: 
+ pr2-applications (0.0.20) UNRELEASED; urgency=medium
+ .
+   [ TheDash ]
+   * Added trusty branch
+   * Added ubuntu trusty code
+ .
+   [ dash ]
+ .
+   [ root ]
+Checksums-Sha1: 
+ 9622ff664012b0070157f13418cbbce90c686055 69348 pr2-applications_0.0.20_amd64.deb
+Checksums-Sha256: 
+ 14597423a45fe4bb42111c65a29d0ce9805a367a425a1f1a4d9afced2538ff3f 69348 pr2-applications_0.0.20_amd64.deb
+Files: 
+ e48930d817527fa14f9a60012f05ea68 69348 pr2/config extra pr2-applications_0.0.20_amd64.deb

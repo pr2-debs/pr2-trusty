@@ -1,0 +1,25 @@
+Format: 1.8
+Date: Tue, 12 Oct 2010 16:10:17 -0700
+Source: pr2-systemcheck
+Binary: pr2-systemcheck
+Architecture: amd64
+Version: 0.5.1-precise
+Distribution: stable
+Urgency: low
+Maintainer: Jeremy Leibs <leibs@willowgarage.com>
+Changed-By: Jeremy Leibs <leibs@willowgarage.com>
+Description: 
+ pr2-systemcheck - Runs a series of tests across multiple computers and displays res
+Changes: 
+ pr2-systemcheck (0.5.1-precise) stable; urgency=low
+ .
+   [ Jeremy Leibs ]
+   * Incrementing to SVN: r144
+ .
+   [ root ]
+Checksums-Sha1: 
+ 1ea8d3546290daa99eff158302f544d508f26b73 3186 pr2-systemcheck_0.5.1-precise_amd64.deb
+Checksums-Sha256: 
+ 8b5de56aa5f68cc1dd6f55e092474e07470dad1ba5272e994e50f7b50c951168 3186 pr2-systemcheck_0.5.1-precise_amd64.deb
+Files: 
+ 51af2a20a42320e5eebecd98e0b56a92 3186 config extra pr2-systemcheck_0.5.1-precise_amd64.deb

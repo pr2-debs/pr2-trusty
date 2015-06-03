@@ -1,0 +1,26 @@
+Format: 1.8
+Date: Wed, 27 Feb 2013 01:43:03 +0000
+Source: pr2-udev
+Binary: pr2-udev
+Architecture: amd64
+Version: 0.5.2-precise
+Distribution: stable
+Urgency: low
+Maintainer: Jeremy Leibs <leibs@willowgarage.com>
+Changed-By: Devon Ash <dash@clearpathrobotics.com>
+Description: 
+ pr2-udev   - Special udev rules for the PR2 sensors.
+Changes: 
+ pr2-udev (0.5.2-precise) stable; urgency=low
+ .
+   [ Devon Ash ]
+   * Incrementing to SVN: r1126
+    - r1126: Update to debhelper v9
+ .
+   [ root ]
+Checksums-Sha1: 
+ c9b251a3431d86e464e97a86d01330fd2ccb4032 2304 pr2-udev_0.5.2-precise_amd64.deb
+Checksums-Sha256: 
+ 7d3ca355fd9cc5072bd8c8e45bb6945654f54256800a7c6b6a45c1f59fe14700 2304 pr2-udev_0.5.2-precise_amd64.deb
+Files: 
+ ff052d58f7aa0a2e6a459d2215df64ec 2304 config extra pr2-udev_0.5.2-precise_amd64.deb

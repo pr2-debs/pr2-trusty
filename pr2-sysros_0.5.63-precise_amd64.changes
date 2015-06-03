@@ -1,0 +1,26 @@
+Format: 1.8
+Date: Tue, 04 Dec 2012 13:16:27 -0800
+Source: pr2-sysros
+Binary: pr2-sysros
+Architecture: amd64
+Version: 0.5.63-precise
+Distribution: stable
+Urgency: low
+Maintainer: Austin Hendrix <ahendrix@willowgarage.com>
+Changed-By: Austin Hendrix <ahendrix@willowgarage.com>
+Description: 
+ pr2-sysros - Provides system components that are provided through ROS
+Changes: 
+ pr2-sysros (0.5.63-precise) stable; urgency=low
+ .
+   [ Austin Hendrix ]
+   * Incrementing to SVN: r986
+    - r986: Pull changes from lucid
+ .
+   [ root ]
+Checksums-Sha1: 
+ fae0a6dffd0a98d86736e468120150f24d682222 2052 pr2-sysros_0.5.63-precise_amd64.deb
+Checksums-Sha256: 
+ e7cb55097e184d66308fd0e9fcb5181ac0167c31395260bb5cc16370c935df42 2052 pr2-sysros_0.5.63-precise_amd64.deb
+Files: 
+ 98b120fc8f5f6b7d37cc832f828fc80d 2052 pr2/config extra pr2-sysros_0.5.63-precise_amd64.deb

@@ -1,0 +1,26 @@
+Format: 1.8
+Date: Sat, 12 Jan 2013 11:29:54 -0800
+Source: pr2-webui
+Binary: pr2-webui
+Architecture: amd64
+Version: 0.5.9-precise
+Distribution: stable
+Urgency: low
+Maintainer: Austin Hendrix <ahendrix@willowgarage.com>
+Changed-By: Austin Hendrix <ahendrix@willowgarage.com>
+Description: 
+ pr2-webui  - Sets up the webui for the pr2
+Changes: 
+ pr2-webui (0.5.9-precise) stable; urgency=low
+ .
+   [ Austin Hendrix ]
+   * Incrementing to SVN: r1073
+    - r1073: Update apache configuration.
+ .
+   [ root ]
+Checksums-Sha1: 
+ 5337e4ab2dba9b2f9c681c9729276448c9b9c065 11056 pr2-webui_0.5.9-precise_amd64.deb
+Checksums-Sha256: 
+ 032235a24aa1345dff5d598498d9bb2e922ce712ea0cb9bcf6a83639350ace62 11056 pr2-webui_0.5.9-precise_amd64.deb
+Files: 
+ 4cb834be84f6466c28de323b80a6ddea 11056 config extra pr2-webui_0.5.9-precise_amd64.deb
