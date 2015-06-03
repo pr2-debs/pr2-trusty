@@ -45,6 +45,9 @@ def build_pkgs(pkgs, new_only, manual, auto):
             current_tag = versions[0]
             most_recent_tag = versions[1]
 
+            current_tag = current_tag.rsplit('\n')[0]
+            most_recent_tag = most_recent_tag.rsplit('\n')[0]
+
             commit_id = get_commit_id(current_tag)
             confirm_detected_versions(current_tag, most_recent_tag)
             new_v = is_new_version(most_recent_tag, current_tag)
@@ -106,7 +109,7 @@ def get_current_tag():
             print colored("Created and pushed git tags (%s)" %debversion, 'blue')
             current_tag = debversion
 
-    print colored("Detected current release: %s" % current_tag, 'yellow') 
+    current_tag = current_tag.rsplit('\n')[0]
     return current_tag
 
 # Manually ask for current release and previous release
@@ -130,7 +133,10 @@ def do_manual_versioning():
 def do_auto_versioning():
     print colored("Auto versioning and configuration enabled.", 'yellow')
     current_tag = get_current_tag()
+    current_tag = current_tag.rsplit('\n')[0]
+    print colored("Current branch is on release %s" %current_tag, 'yellow')
     most_recent = get_most_recent_release(current_tag)
+    print colored("Most up to date version is %s" %most_recent, 'yellow')
     versions = (current_tag, most_recent)
     return versions
 
@@ -140,6 +146,7 @@ def get_commit_id(tag):
     command2 = "head -n 1"
     pipe = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
     commit_id = subprocess.check_output(command2, shell=True, stdin=pipe.stdout)
+    print colored("Commit id of %s is %s" %(tag, commit_id), 'yellow')
     return commit_id
 
 # Confirm that the versions changes are made from are correct. E.g if it detects 0.5.3 and 0.5.4, do you want to includ commits from tag 0.5.3 to 0.5.4 in your debian package release?
@@ -154,7 +161,7 @@ def confirm_detected_versions(current_tag, most_recent_tag):
 
 # Check if tag a > tag b, If so, returns that tag A is the new version. Else it is not a new version
 def is_new_version(tag_a, tag_b):
-    print colored("Checking %s against %s.. determining if new version" %(tag_a, tag_b), 'blue')
+    print colored("Checking %s against %s and determining if new version" %(tag_a, tag_b), 'blue')
     new_v = ""
     if LegacyVersion(tag_a) > LegacyVersion(tag_b) and not (LegacyVersion(tag_a) < LegacyVersion(tag_b)) and tag_a == tag_b:
         print colored("New version detected!", 'green')
