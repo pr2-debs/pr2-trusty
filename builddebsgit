@@ -147,18 +147,14 @@ def get_current_tag():
 
 # Manually ask for current release and previous release
 def do_manual_versioning():
+    out = subprocess.check_output("git tag", shell=True)
+    print colored("Current tag list is %s" %out, 'green')
     inp = raw_input("You specified to use the manual changelog generation. From what tag should be used for generating the changelog? [E.g 0.0.19]\n")
-    if inp.lower() > LegacyVersion("0.0.0"):
-        current_tag = inp
-        print "Current version is %\ns" % current_tag
-    else:
-        print "Specify a version # above 0.0.0\n"
-        inp2 = raw_input("What tag is the current release of %s?\n" % p)
-        if inp.lower() > LegacyVersion(current_tag):
-            recent_release = inp2
-            print "Next release will be %s" % recent_release
-        else:
-            print "Specify a version # greater than %s " %current_tag
+    current_tag = inp
+    print "Current version is %s" % current_tag
+    inp2 = raw_input("What tag is the current release of this package?")
+    recent_release = inp2
+    print "Next release will be %s" % recent_release
 
     current_tag = current_tag.rsplit('\n')[0]
     recent_release = recent_release.rsplit('\n')[0]
