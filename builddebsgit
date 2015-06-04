@@ -13,12 +13,21 @@ from optparse import OptionParser
 from packaging.version import Version, LegacyVersion
 
 increment_version = False
+fullauto = False
 
 # Main script that puts everything together
-def build_pkgs(pkgs, new_only, manual, auto, use_git_author, increment):
+def build_pkgs(pkgs, new_only, manual, auto, use_git_author, increment, fa):
 
     global increment_version
     increment_version = increment
+
+    global fullauto
+
+    fullauto = fa
+
+    if manual and fullauto:
+        print colored("You have specified --manual and --full-auto. These are incompatible. Please retry with only one of these options.", 'red')
+        sys.exit(0)
 
     if len(pkgs) == 0:
         pkgs = os.listdir('.')
@@ -64,11 +73,14 @@ def build_pkgs(pkgs, new_only, manual, auto, use_git_author, increment):
 
 # Asks user if they want to git pull
 def check_git_pull():
-    yesno = raw_input("About to invoke 'git pull.'  Continue? [Y/n]")
-    if yesno.lower()=="n":
-        print "Aborting..."
-        sys.exit(0)
+
+    if not fullauto:
+        yesno = raw_input("About to invoke 'git pull.'  Continue? [Y/n]")
+        if yesno.lower()=="n":
+            print "Aborting..."
+            sys.exit(0)
     else:
+        print colored("Pulling git source down..." , 'blue')
         subprocess.check_output("git pull", shell=True)
 
 # Determines if deb package exists in repo/directory
@@ -110,10 +122,11 @@ def get_current_tag():
     # Go to nxt pkg
         current_tag = subprocess.check_output('git describe', shell=True)
     except CalledProcessError as e:
-        yn = raw_input("No version tag found. Do you want to initialize a Git release from the current deb package's version? If no, this process will stop. [Y/n]?\n")
-        if yn.lower() == "n":
-            print "Aborting"
-            sys.exit(0)
+        if not fullauto:
+            yn = raw_input("No version tag found. Do you want to initialize a Git release from the current deb package's version? If no, this process will stop. [Y/n]?\n")
+            if yn.lower() == "n":
+                print "Aborting"
+                sys.exit(0)
           
         debversion = subprocess.check_output("dpkg-parsechangelog --show-field Version", shell=True)
         print colored("Current detected version is %s" %debversion, 'yellow')
@@ -199,13 +212,14 @@ def get_commit_id(tag):
 
 # Confirm that the versions changes are made from are correct. E.g if it detects 0.5.3 and 0.5.4, do you want to includ commits from tag 0.5.3 to 0.5.4 in your debian package release?
 def confirm_detected_versions(current_tag, most_recent_tag):
-    corr = raw_input("You will be including commits from version %s to %s. Is this correct? [Y/n/M]?\n" %(current_tag, most_recent_tag))
-    if corr.lower()=="n":
-        print colored("Aborting!", 'red')
-        sys.exit(0)
-    elif corr.lower()=="m":
-        print colored("Manual override hasn't been implemented yet!", 'red')
-        sys.exit(0)
+    if not fullauto:
+        corr = raw_input("You will be including commits from version %s to %s. Is this correct? [Y/n/M]?\n" %(current_tag, most_recent_tag))
+        if corr.lower()=="n":
+            print colored("Aborting!", 'red')
+            sys.exit(0)
+        elif corr.lower()=="m":
+            print colored("Manual override hasn't been implemented yet!", 'red')
+            sys.exit(0)
 
 # Check if tag a > tag b, If so, returns that tag A is the new version. Else it is not a new version
 def is_new_version(tag_a, tag_b):
@@ -242,5 +256,6 @@ if __name__ == "__main__":
   parser.add_option("--manual-tag", help="Passing in this parameter will allow you to specify from what tag to what tag's commits are included in the changelog. Use --auto if you want the most recent changes", dest="manual", default=False, action="store_true")
   parser.add_option("--use-git-author", help="Uses the git-dch --git-author option when making the debs. It pulls in the user.name and user.email from git configs", action="store_true", dest="use_git_author", default="True")
   parser.add_option("--increment", "-i" , help="Increments the version tags of all packages involved.", dest="increment", default=False, action="store_true")
+  parser.add_option("--full-auto", "-fa", help="Full auto, does not prompt user for anything. It runs like auto (think of auto being semi-auto), but pressing yes at every prompt and automating the build process for you.", dest="fullauto", default="False", action="store_true")
   (options, args) = parser.parse_args()
-  build_pkgs(args, options.new_only, options.manual, options.auto, options.use_git_author, options.increment)
+  build_pkgs(args, options.new_only, options.manual, options.auto, options.use_git_author, options.increment, options.fullauto)
