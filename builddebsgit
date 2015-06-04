@@ -261,7 +261,7 @@ def make_package():
 
 # Main
 if __name__ == "__main__":
-  parser = OptionParser(usage="usage: builddeps [PKG1 PKG2 ...]")
+  parser = OptionParser(usage="usage: builddebsgit [PKG1 PKG2 ...]")
   parser.add_option("--new",action="store_true", dest="new_only",default=False)
   parser.add_option("--auto", "-a", help="Auto configure the release tags. with -a or --auto set, this script will create a changelog from the current git tag to the most recent git version tag. Please see --manual-tag to set the release specifics during the build", dest="auto", default=True, action="store_true")
   parser.add_option("--manual-tag", help="Passing in this parameter will allow you to specify from what tag to what tag's commits are included in the changelog. Use --auto if you want the most recent changes", dest="manual", default=False, action="store_true")
