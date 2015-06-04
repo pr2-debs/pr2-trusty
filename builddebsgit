@@ -12,9 +12,14 @@ from subprocess import CalledProcessError
 from optparse import OptionParser
 from packaging.version import Version, LegacyVersion
 
+increment_version = False
 
 # Main script that puts everything together
-def build_pkgs(pkgs, new_only, manual, auto):
+def build_pkgs(pkgs, new_only, manual, auto, use_git_author, increment):
+
+    global increment_version
+    increment_version = increment
+
     if len(pkgs) == 0:
         pkgs = os.listdir('.')
     pkgs = [p for p in pkgs if os.path.isdir(p) and p[0] != '.']
@@ -53,7 +58,7 @@ def build_pkgs(pkgs, new_only, manual, auto):
             commit_id = get_commit_id(current_tag)
             confirm_detected_versions(current_tag, most_recent_tag)
             new_v = is_new_version(most_recent_tag, current_tag)
-            generate_changelogs(most_recent_tag, new_v, commit_id)
+            generate_changelogs(most_recent_tag, new_v, commit_id, use_git_author)
             make_package()
             os.chdir('..')
 
@@ -92,6 +97,12 @@ def get_most_recent_release(current_tag):
         print colored("Detected recent release: %s" % recent_release, 'yellow')
         return recent_release
 
+def create_new_tag(version):
+    cmd = "git tag -a %s -m 'Creation version tag %s\n'" %(version, version)
+    addtag = subprocess.check_output(cmd, shell=True)
+    pushtag = subprocess.check_output("git push --tags", shell=True)
+    print colored("Created and pushed git tags (%s)" %version, 'blue')
+
 # returns current github tag from git describe, or existing deb changelog if none exists for Github.
 def get_current_tag():
     current_tag = ""
@@ -107,10 +118,7 @@ def get_current_tag():
         debversion = subprocess.check_output("dpkg-parsechangelog --show-field Version", shell=True)
         print colored("Current detected version is %s" %debversion, 'yellow')
         debversion = debversion.rsplit('\n')[0]
-        cmd = "git tag -a %s -m 'Creation version tag %s\n'" %(debversion, debversion)
-        addtag = subprocess.check_output(cmd, shell=True)
-        pushtag = subprocess.check_output("git push --tags", shell=True)
-        print colored("Created and pushed git tags (%s)" %debversion, 'blue')
+        create_new_tag(debversion)
         current_tag = debversion
 
     current_tag = current_tag.rsplit('\n')[0]
@@ -130,8 +138,28 @@ def do_manual_versioning():
             print "Next release will be %s" % recent_release
         else:
             print "Specify a version # greater than %s " %current_tag
-    
+
+    current_tag = current_tag.rsplit('\n')[0]
+    recent_release = recent_release.rsplit('\n')[0]
+    versions = (current_tag, recent_release)
     return versions
+
+
+def increment_tag_version(version):
+    version = version.rsplit('.')
+    numtoinc = version[2]
+    numtoinc = int(numtoinc) + 1
+    version[2] = numtoinc
+    versstring = ""
+    for i, num in enumerate(version):
+        if i != len(version)-1:
+            versstring = str(versstring) + str(num) + "."
+        else:
+            versstring = str(versstring) + str(num)
+        
+    print colored("As requested by -i/--increment, builddebsgit has increased version number to: %s " %versstring, 'red')
+    return versstring
+
 
 # Auto detect versions (it detects the current version via git describe and the tag prior to that one)
 def do_auto_versioning():
@@ -141,6 +169,15 @@ def do_auto_versioning():
     print colored("Current branch is on release %s" %current_tag, 'yellow')
     most_recent = get_most_recent_release(current_tag)
     print colored("Most up to date version is %s" %most_recent, 'yellow')
+
+    if increment_version:
+        most_recent = increment_tag_version(most_recent)
+        create_new_tag(most_recent)
+        # Create a new tag that is an increment higher than the most_recent.
+        # Push the new tag
+        # get the most_recent tag again
+        #
+
     versions = (current_tag, most_recent)
     return versions
 
@@ -150,7 +187,7 @@ def get_commit_id(tag):
     command2 = "head -n 1"
     pipe = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE)
     commit_id = subprocess.check_output(command2, shell=True, stdin=pipe.stdout)
-    print colored("Commit id of %s is %s" %(tag, commit_id), 'yellow')
+    print colored("Commit id of %s (the present version of the branch) is %s" %(tag, commit_id), 'yellow')
     return commit_id
 
 # Confirm that the versions changes are made from are correct. E.g if it detects 0.5.3 and 0.5.4, do you want to includ commits from tag 0.5.3 to 0.5.4 in your debian package release?
@@ -173,9 +210,13 @@ def is_new_version(tag_a, tag_b):
     return new_v
 
 # Generates changelogs for this git deb package, given some parameters.
-def generate_changelogs(most_recent_release, new_version, commit_id):
+def generate_changelogs(most_recent_release, new_version, commit_id, use_git_author):
+    author = ""
+    if use_git_author:
+        print "Using specified git author"
+        author = "--git-author "
     print "Generating changelogs from Git commit %s and later\n" %commit_id
-    command = "git-dch --debian-branch=ubuntu-trusty --full %s %s --since=%s" %(most_recent_release, new_version, commit_id)
+    command = "git-dch --debian-branch=ubuntu-trusty %s --full %s %s --since=%s" %(author, most_recent_release, new_version, commit_id)
     command.rstrip('\n')
     out = subprocess.check_output(command, shell=True)
     return out
@@ -192,5 +233,7 @@ if __name__ == "__main__":
   parser.add_option("--new",action="store_true", dest="new_only",default=False)
   parser.add_option("--auto", "-a", help="Auto configure the release tags. with -a or --auto set, this script will create a changelog from the current git tag to the most recent git version tag. Please see --manual-tag to set the release specifics during the build", dest="auto", default=True, action="store_true")
   parser.add_option("--manual-tag", help="Passing in this parameter will allow you to specify from what tag to what tag's commits are included in the changelog. Use --auto if you want the most recent changes", dest="manual", default=False, action="store_true")
+  parser.add_option("--use-git-author", help="Uses the git-dch --git-author option when making the debs. It pulls in the user.name and user.email from git configs", action="store_true", dest="use_git_author", default="True")
+  parser.add_option("--increment", "-i" , help="Increments the version tags of all packages involved.", dest="increment", default=False, action="store_true")
   (options, args) = parser.parse_args()
-  build_pkgs(args, options.new_only, options.manual, options.auto)
+  build_pkgs(args, options.new_only, options.manual, options.auto, options.use_git_author, options.increment)
