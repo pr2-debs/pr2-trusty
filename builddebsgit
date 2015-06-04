@@ -147,6 +147,10 @@ def do_manual_versioning():
 
 def increment_tag_version(version):
     version = version.rsplit('.')
+    versiondist = version[2].rsplit('-')
+    version[2] = versiondist[0]
+    versiondistname = versiondist[1]
+
     numtoinc = version[2]
     numtoinc = int(numtoinc) + 1
     version[2] = numtoinc
@@ -155,7 +159,10 @@ def increment_tag_version(version):
         if i != len(version)-1:
             versstring = str(versstring) + str(num) + "."
         else:
-            versstring = str(versstring) + str(num)
+            if versiondistname is not None:
+                versstring = str(versstring) + str(num) + "-" + versiondistname
+            else:
+                versstring = str(versstring) + str(num)
         
     print colored("As requested by -i/--increment, builddebsgit has increased version number to: %s " %versstring, 'red')
     return versstring
