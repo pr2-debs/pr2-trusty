@@ -24,9 +24,11 @@ def build_pkgs(pkgs, new_only, manual, auto, use_git_author, increment, fa):
     global fullauto
 
     fullauto = fa
+    if fullauto:
+        auto = False
 
     if manual and fullauto:
-        print colored("You have specified --manual and --full-auto. These are incompatible. Please retry with only one of these options.", 'red')
+        print colored("You have specified (--manual or --auto) and --full-auto. These are incompatible. Please retry with only one of these options.", 'red')
         sys.exit(0)
 
     if len(pkgs) == 0:
@@ -40,22 +42,22 @@ def build_pkgs(pkgs, new_only, manual, auto, use_git_author, increment, fa):
     for deb in made_debs:
         print colored("%s is already made. Skipping." %deb, 'green')
 
-    if not manual and not auto:
-        print "WARNING: Please specify if you want --auto or --manual-tag"
+    if not manual and not auto and not fullauto:
+        print "WARNING: Please specify if you want --auto, --full-auto or --manual-tag"
         sys.exit(0)
 
-    check_git_pull()
 
     for p in pkgs:
         p = p.strip('/')
         print colored("\nPreparing to build package: %s"%p, 'blue')
         if not package_exists(p.lower()):
             os.chdir(p)
+            check_git_pull()
 
             versions = ()
             if manual:
                 versions = do_manual_versioning()
-            elif auto:
+            elif auto or fullauto:
                 versions = do_auto_versioning()
 
             current_tag = versions[0]
@@ -256,6 +258,6 @@ if __name__ == "__main__":
   parser.add_option("--manual-tag", help="Passing in this parameter will allow you to specify from what tag to what tag's commits are included in the changelog. Use --auto if you want the most recent changes", dest="manual", default=False, action="store_true")
   parser.add_option("--use-git-author", help="Uses the git-dch --git-author option when making the debs. It pulls in the user.name and user.email from git configs", action="store_true", dest="use_git_author", default="True")
   parser.add_option("--increment", "-i" , help="Increments the version tags of all packages involved.", dest="increment", default=False, action="store_true")
-  parser.add_option("--full-auto", "-fa", help="Full auto, does not prompt user for anything. It runs like auto (think of auto being semi-auto), but pressing yes at every prompt and automating the build process for you.", dest="fullauto", default="False", action="store_true")
+  parser.add_option("--full-auto", "-f", help="Full auto, does not prompt user for anything. It runs like auto (think of auto being semi-auto), but pressing yes at every prompt and automating the build process for you.", dest="fullauto", default=False, action="store_true")
   (options, args) = parser.parse_args()
   build_pkgs(args, options.new_only, options.manual, options.auto, options.use_git_author, options.increment, options.fullauto)
