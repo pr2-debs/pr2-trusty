@@ -14,9 +14,14 @@ from packaging.version import Version, LegacyVersion
 
 increment_version = False
 fullauto = False
+branch = "ubuntu-trusty"
+
 
 # Main script that puts everything together
-def build_pkgs(pkgs, new_only, manual, auto, use_git_author, increment, fa):
+def build_pkgs(pkgs, new_only, manual, auto, use_git_author, increment, fa, b):
+
+    global branch
+    branch = b
 
     global increment_version
     increment_version = increment
@@ -111,6 +116,7 @@ def get_most_recent_release(current_tag):
         print colored("Detected recent release: %s" % recent_release, 'yellow')
         return recent_release
 
+# Creates a new git tag given the version to create a tag of
 def create_new_tag(version):
     cmd = "git tag -a %s -m 'Creation version tag %s\n'" %(version, version)
     addtag = subprocess.check_output(cmd, shell=True)
@@ -159,7 +165,14 @@ def do_manual_versioning():
     versions = (current_tag, recent_release)
     return versions
 
-
+# Increments version tag of the given version
+# Supported input types:
+# x.x.x
+# x.x.x-word
+# E.g
+# 0.5.3
+# 0.5.3-trusty
+# 0.5.3-precise
 def increment_tag_version(version):
     version = version.rsplit('.')
     versiondist = version[2].rsplit('-')
@@ -239,7 +252,7 @@ def generate_changelogs(most_recent_release, new_version, commit_id, use_git_aut
         print "Using specified git author"
         author = "--git-author "
     print "Generating changelogs from Git commit %s and later\n" %commit_id
-    command = "git-dch --debian-branch=ubuntu-trusty %s --full %s %s --since=%s" %(author, most_recent_release, new_version, commit_id)
+    command = "git-dch --debian-branch=%s %s --full %s %s --since=%s" %(branch, author, most_recent_release, new_version, commit_id)
     command.rstrip('\n')
     out = subprocess.check_output(command, shell=True)
     return out
@@ -259,5 +272,6 @@ if __name__ == "__main__":
   parser.add_option("--use-git-author", help="Uses the git-dch --git-author option when making the debs. It pulls in the user.name and user.email from git configs", action="store_true", dest="use_git_author", default="True")
   parser.add_option("--increment", "-i" , help="Increments the version tags of all packages involved.", dest="increment", default=False, action="store_true")
   parser.add_option("--full-auto", "-f", help="Full auto, does not prompt user for anything. It runs like auto (think of auto being semi-auto), but pressing yes at every prompt and automating the build process for you.", dest="fullauto", default=False, action="store_true")
+  parser.add_option("--branch", "-b", help="Specify a branch you wish to pull from", dest="branch", default="ubuntu-trusty")
   (options, args) = parser.parse_args()
-  build_pkgs(args, options.new_only, options.manual, options.auto, options.use_git_author, options.increment, options.fullauto)
+  build_pkgs(args, options.new_only, options.manual, options.auto, options.use_git_author, options.increment, options.fullauto, options.branch)
