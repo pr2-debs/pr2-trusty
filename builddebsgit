@@ -168,7 +168,7 @@ def get_current_tag():
     current_tag = ""
     try:
     # Go to nxt pkg
-        current_tag = subprocess.check_output('git describe', shell=True)
+        current_tag = subprocess.check_output('git describe --tags', shell=True)
     except CalledProcessError as e:
         if not fullauto:
             yn = raw_input("No version tag found. Do you want to initialize a Git release from the current deb package's version? If no, this process will stop. [Y/n]?\n")
