@@ -84,3 +84,6 @@
 [submodule "pr2-applications"]
 	path = pr2-applications
 	url = https://github.com/pr2-debs/pr2-applications
+[submodule "pr2-buildscripts"]
+	path = pr2-buildscripts
+	url = https://github.com/pr2-debs/pr2-buildscripts
